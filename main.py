@@ -325,8 +325,16 @@ class RepoServer:
     def publish_dir(self, owner: str, repo: str, root_folder: str) -> Path:
         def factory() -> Path:
             base = self.repo_dir(owner, repo)
-            if root_folder and root_folder not in {"", "."}:
-                candidate = base / root_folder
+            raw = (root_folder or "").strip()
+            normalized = raw.replace("\\", "/").strip("/")
+            if normalized and normalized != ".":
+                candidate = (base / normalized).resolve()
+                base_resolved = base.resolve()
+                try:
+                    # Validation only: raises ValueError when candidate is outside base_resolved.
+                    candidate.relative_to(base_resolved)
+                except ValueError:
+                    return base
                 if candidate.is_dir():
                     return candidate
             return base
