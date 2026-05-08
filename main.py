@@ -330,9 +330,12 @@ class RepoServer:
             if normalized and normalized != ".":
                 candidate = (base / normalized).resolve()
                 base_resolved = base.resolve()
-                if os.path.commonpath([str(base_resolved), str(candidate)]) == str(base_resolved):
-                    if candidate.is_dir():
-                        return candidate
+                try:
+                    candidate.relative_to(base_resolved)
+                except ValueError:
+                    return base
+                if candidate.is_dir():
+                    return candidate
             return base
         return self.get_cached(self.publish_dir_cache, (owner, repo), factory)
 
