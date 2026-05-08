@@ -325,10 +325,14 @@ class RepoServer:
     def publish_dir(self, owner: str, repo: str, root_folder: str) -> Path:
         def factory() -> Path:
             base = self.repo_dir(owner, repo)
-            if root_folder and root_folder not in {"", "."}:
-                candidate = base / root_folder
-                if candidate.is_dir():
-                    return candidate
+            raw = (root_folder or "").strip()
+            normalized = raw.replace("\\", "/").strip("/")
+            if normalized and normalized != ".":
+                candidate = (base / normalized).resolve()
+                base_resolved = base.resolve()
+                if os.path.commonpath([str(base_resolved), str(candidate)]) == str(base_resolved):
+                    if candidate.is_dir():
+                        return candidate
             return base
         return self.get_cached(self.publish_dir_cache, (owner, repo), factory)
 
