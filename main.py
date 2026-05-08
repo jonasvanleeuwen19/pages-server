@@ -331,7 +331,8 @@ class RepoServer:
                 candidate = (base / normalized).resolve()
                 base_resolved = base.resolve()
                 try:
-                    _ = candidate.relative_to(base_resolved)
+                    # Validation only: raises ValueError when candidate is outside base_resolved.
+                    candidate.relative_to(base_resolved)
                 except ValueError:
                     return base
                 if candidate.is_dir():
