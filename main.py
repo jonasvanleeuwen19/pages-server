@@ -331,7 +331,7 @@ class RepoServer:
                 candidate = (base / normalized).resolve()
                 base_resolved = base.resolve()
                 try:
-                    candidate.relative_to(base_resolved)
+                    _ = candidate.relative_to(base_resolved)
                 except ValueError:
                     return base
                 if candidate.is_dir():
