@@ -1,0 +1,4 @@
+cachetools
+Authlib
+py-gitea
+python-dotenv
