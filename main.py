@@ -171,6 +171,7 @@ class RepoServer:
         main_domain: str,
         pages_subdomain: str,
         instance_name: str,
+        preferred_branch: str,
         logo_url: str,
         favicon_url: str,
         public_url: str,
@@ -185,6 +186,7 @@ class RepoServer:
         self.main_domain = main_domain.lower()
         self.pages_subdomain = pages_subdomain.lower()
         self.instance_name = instance_name
+        self.preferred_branch = preferred_branch
         self.logo_url = logo_url
         self.favicon_url = favicon_url
         self.public_url = public_url.rstrip("/")
@@ -460,6 +462,7 @@ class RepoServer:
         return self.load_template("landing.html").format(
             main_domain=html.escape(self.main_domain),
             instance_name=html.escape(self.instance_name),
+            preferred_branch=html.escape(self.preferred_branch),
             logo_url=html.escape(self.logo_url),
             favicon_url=html.escape(self.favicon_url),
             instance_url=html.escape(self.client.url),
@@ -983,6 +986,7 @@ def main() -> int:
 
         pages_subdomain  = os.getenv("PAGES_SUBDOMAIN", f"pages.{main_domain}").strip() or f"pages.{main_domain}"
         instance_name    = os.getenv("INSTANCE_NAME", "Tuxforge Pages").strip() or "Tuxforge Pages"
+        preferred_branch = os.getenv("GITEA_BRANCH_NAME", "pages").strip() or "pages"
         port             = int(os.getenv("WEB_PORT", "8080"))
         clone_root       = Path(os.getenv("PAGES_ROOT", "./pages")).expanduser().resolve()
         db_path          = Path(os.getenv("PAGES_DB", "./pages.db")).expanduser().resolve()
@@ -999,7 +1003,7 @@ def main() -> int:
     app = RepoServer(
         gitea_url, token, verify_ssl, clone_root, db,
         main_domain, pages_subdomain,
-        instance_name, logo_url, favicon_url,
+        instance_name, preferred_branch, logo_url, favicon_url,
         public_url, oauth_client_id, oauth_client_secret,
         webhook_url, templates_dir,
     )
